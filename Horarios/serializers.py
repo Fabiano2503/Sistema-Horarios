@@ -21,8 +21,8 @@ class HorarioRecuperacionSerializer(serializers.ModelSerializer):
         if dias_no_permitidos:
             raise serializers.ValidationError(f"Día(s) no permitido(s) en faltas: {', '.join(dias_no_permitidos)}. Solo se permite de lunes a viernes.")
         # Solo permitir un día seleccionado
-        if len(value) != 1:
-            raise serializers.ValidationError("Debes seleccionar exactamente un día de falta.")
+        if len(value) == 0:
+            raise serializers.ValidationError("Debes seleccionar al menos un día de falta.")
         return value
     # Validación para asegurar que un practicante solo tenga un horario
     def validate_practicante(self, value):
@@ -64,8 +64,8 @@ class HorarioRecuperacionSerializer(serializers.ModelSerializer):
 
     def validate_dias_recuperacion(self, value):
         # Solo permitir un día seleccionado
-        if len(value) != 1:
-            raise serializers.ValidationError("Debes seleccionar exactamente un día de recuperación.")
+        if len(value) == 0:
+            raise serializers.ValidationError("Debes seleccionar al menos un día de recuperación.")
         return value
 
     class Meta:

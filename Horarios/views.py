@@ -7,12 +7,12 @@ from .utils import export_horarios_to_excel
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action, permission_classes
 from django.shortcuts import render
+from rest_framework.response import Response
 
 class HorarioRecuperacionViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
-        from rest_framework.response import Response
         return Response({"detail": "Horario de recuperación borrado correctamente."})
     queryset = HorarioRecuperacion.objects.all()
     serializer_class = HorarioRecuperacionSerializer

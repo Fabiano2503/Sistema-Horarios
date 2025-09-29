@@ -10,7 +10,7 @@ def insertar_datos_iniciales(apps, schema_editor):
     Habilidad = apps.get_model('Habilidades', 'Habilidad')
 
     # Insertar especialidades
-    especialidades = ['SCRUM MASTER', 'PRODUCT OWNER', 'FRONTEND', 'BACKEND']
+    especialidades = ['LÍDER', 'SCRUM MASTER', 'PRODUCT OWNER', 'FRONTEND', 'BACKEND']
     for nombre in especialidades:
         Especialidad.objects.get_or_create(nombre=nombre)
 

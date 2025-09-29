@@ -2,6 +2,8 @@ import openpyxl
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from openpyxl.utils import get_column_letter
 from io import BytesIO
+from .models import Habilidad
+from collections import OrderedDict
 
 def export_niveles_habilidad_to_excel(queryset):
     wb = openpyxl.Workbook()
@@ -21,8 +23,12 @@ def export_niveles_habilidad_to_excel(queryset):
         bottom=Side(style='thin')
     )
 
+    # Obtener todas las habilidades
+    habilidades = Habilidad.objects.all().order_by('nombre')
+    habilidad_nombres = [h.nombre for h in habilidades]
+
     # Encabezados
-    headers = ['Practicante', 'Habilidad', 'Puntaje']
+    headers = ['Practicante'] + habilidad_nombres
     ws.append(headers)
 
     for col_num, header in enumerate(headers, 1):
@@ -32,18 +38,23 @@ def export_niveles_habilidad_to_excel(queryset):
         cell.alignment = alignment_center
         cell.border = thin_border
 
-    # Datos
-    for row_idx, nivel in enumerate(queryset, start=2):
-        row_data = [
-            str(nivel.practicante),
-            str(nivel.habilidad),
-            nivel.puntaje
-        ]
+    # Procesar datos
+    practicantes_data = OrderedDict()
+    for nivel in queryset:
+        practicante_nombre = str(nivel.practicante)
+        if practicante_nombre not in practicantes_data:
+            practicantes_data[practicante_nombre] = {h_nombre: "" for h_nombre in habilidad_nombres}
+        practicantes_data[practicante_nombre][str(nivel.habilidad)] = nivel.puntaje
 
+    # Escribir datos
+    row_idx = 2
+    for practicante, puntajes in practicantes_data.items():
+        row_data = [practicante] + [puntajes[h_nombre] for h_nombre in habilidad_nombres]
         for col_idx, value in enumerate(row_data, start=1):
             cell = ws.cell(row=row_idx, column=col_idx, value=value)
             cell.alignment = alignment_left
             cell.border = thin_border
+        row_idx += 1
 
     # Ajustar ancho de columnas
     for col_idx, col_cells in enumerate(ws.columns, 1):
